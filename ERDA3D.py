@@ -1,5 +1,4 @@
 from math import *
-import numpy as np
 import pygame as pg
 
 def closescr():
@@ -37,8 +36,8 @@ ymaxscr = 150
 scr = initscr(xmaxscr,ymaxscr)
 
 #position of the guard (cannot coincide with any of the important points)
-xguard=10000/par
-yguard=3000/par
+xguard=8000/par
+yguard=5000/par
 
 #__________________________________________________________________
 #defining the edge points as a class
@@ -70,42 +69,15 @@ class importantpoint():
             
 #first line left below
 point11=importantpoint(0/par,1040/par)
-point12=importantpoint(2080/par,1040/par)
 point13=importantpoint(4160/par,1040/par)
 #second line right below
 point21=importantpoint(27840/par,1040/par)
-point22=importantpoint(29920/par,1040/par)
 point23=importantpoint(32000/par,1040/par)
 #upper line
 point31=importantpoint(8664/par,4621/par)
-point32=importantpoint(16000/par,4621/par)
 point33=importantpoint(23336/par,4621/par)
 
 #______________________________________________________________________
-#defining formulas
-#lower left line
-arr1=np.array([1,(point11.theta),(point11.theta)**2])
-arr2=np.array([1,(point12.theta),(point12.theta)**2])
-arr3=np.array([1,(point13.theta),(point13.theta)**2])
-arr=np.array([arr1,arr2,arr3])
-invarr=np.linalg.inv(arr)
-finalarr1=np.dot(invarr,[point11.r,point12.r,point13.r])
-
-#lower right line
-arr1=np.array([1,(point21.theta),(point21.theta)**2])
-arr2=np.array([1,(point22.theta),(point22.theta)**2])
-arr3=np.array([1,(point23.theta),(point23.theta)**2])
-arr=np.array([arr1,arr2,arr3])
-invarr=np.linalg.inv(arr)
-finalarr2=np.dot(invarr,[point21.r,point22.r,point23.r])
-
-#upper line
-arr1=np.array([1,(point31.theta),(point31.theta)**2])
-arr2=np.array([1,(point32.theta),(point32.theta)**2])
-arr3=np.array([1,(point33.theta),(point33.theta)**2])
-arr=np.array([arr1,arr2,arr3])
-invarr=np.linalg.inv(arr)
-finalarr3=np.dot(invarr,[point31.r,point32.r,point33.r])
 
 # Define colors and draw white screen
 white = (255,255,255)
@@ -139,26 +111,20 @@ for i in range(int(xmax)):
         if theta<0:
             theta=theta+2*pi
             
-        #using the formulas to check if r is greater
+        #check if r is greater than the corresponding point on the wall
         if point11.theta>=theta>=point13.theta or point13.theta>=theta>=point11.theta:
-            border=finalarr1[0]+finalarr1[1]*theta+finalarr1[2]*theta*theta
+            border=point11.r*sin(point11.theta)/sin(theta)
+            
             if r>border:
                 c=c+1
                 scr.set_at((int(i/xmax*xmaxscr),int(j/xmax*xmaxscr)),red)
                 #surface.fill(color, (pos, (1, 1)))
             else:
                 scr.set_at((int(i/xmax*xmaxscr),int(j/xmax*xmaxscr)),green)
+                
         elif point21.theta>=theta>=point23.theta or point23.theta>=theta>=point21.theta:
-            border=finalarr2[0]+finalarr2[1]*theta+finalarr2[2]*theta*theta
-            if r>border:
-                c=c+1
-                scr.set_at((int(i/xmax*xmaxscr),int(j/xmax*xmaxscr)),red)
-            else:
-                scr.set_at((int(i/xmax*xmaxscr),int(j/xmax*xmaxscr)),green)
-
+            border=point21.r*sin(point21.theta)/sin(theta)
             
-        elif point31.theta>=theta>=point33.theta or point33.theta>=theta>=point31.theta:
-            border=finalarr3[0]+finalarr3[1]*theta+finalarr3[2]*theta*theta
             if r>border:
                 c=c+1
                 scr.set_at((int(i/xmax*xmaxscr),int(j/xmax*xmaxscr)),red)
@@ -167,6 +133,20 @@ for i in range(int(xmax)):
 
         else:
             scr.set_at((int(i/xmax*xmaxscr),int(j/xmax*xmaxscr)),green)
+            
+        if (point31.theta>=theta>=point33.theta or point33.theta>=theta>=point31.theta) and ((point31.r<point11.r)and(point33.r<point13.r)or(point31.r<point21.r)and(point33.r<point23.r)):
+            border=point31.r*sin(point31.theta)/sin(theta)
+                
+            if r>border:
+                c=c+1
+                scr.set_at((int(i/xmax*xmaxscr),int(j/xmax*xmaxscr)),red)
+            else:
+                scr.set_at((int(i/xmax*xmaxscr),int(j/xmax*xmaxscr)),green)
+                
+        if (((point11.theta>=theta>=point13.theta or point13.theta>=theta>=point11.theta) and (point31.theta>=theta>=point33.theta or point33.theta>=theta>=point31.theta)) or ((point21.theta>=theta>=point23.theta or point23.theta>=theta>=point21.theta) and (point31.theta>=theta>=point33.theta or point33.theta>=theta>=point31.theta))):
+            c=c-1
+
+        
             
 
 pg.draw.line(scr,black,(int(point11.x/xmax*xmaxscr),int(point11.y/ymax*ymaxscr)),(int(point13.x/xmax*xmaxscr),int(point13.y/ymax*ymaxscr)))
