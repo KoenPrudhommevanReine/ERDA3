@@ -143,7 +143,7 @@ for i in range(int(xmax)):
             else:
                 scr.set_at((int(i/xmax*xmaxscr),int(j/xmax*xmaxscr)),green)
                 
-        if (((point11.theta>=theta>=point13.theta or point13.theta>=theta>=point11.theta) and (point31.theta>=theta>=point33.theta or point33.theta>=theta>=point31.theta)) or ((point21.theta>=theta>=point23.theta or point23.theta>=theta>=point21.theta) and (point31.theta>=theta>=point33.theta or point33.theta>=theta>=point31.theta))):
+        if ((((point11.theta>=theta>=point13.theta or point13.theta>=theta>=point11.theta) and (point31.theta>=theta>=point33.theta or point33.theta>=theta>=point31.theta)) and (r>border1 and r>border3)) or ((point21.theta>=theta>=point23.theta or point23.theta>=theta>=point21.theta) and (point31.theta>=theta>=point33.theta or point33.theta>=theta>=point31.theta)) and (r>border2 and r>border3)):
             c=c-1
 
         
