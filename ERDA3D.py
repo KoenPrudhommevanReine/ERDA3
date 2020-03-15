@@ -1,5 +1,6 @@
 from math import *
 import pygame as pg
+import random
 
 def closescr():
     keys = pg.key.get_pressed()
@@ -68,11 +69,167 @@ def visiblecheck(i,j,xguard,yguard,theta11,theta13,theta21,theta23,theta31,theta
             visible=0
     
     return(visible)
+    
+    
+def moveforward(guard):
+    firstloc=guard.y
+    guard.y=guard.y+1000/par
+    if 40/par<=firstloc<=1039/par and ((0/par<=guard.x<=4160/par)or(278400/par<=guard.x<=32000/par)):
+        guard.y=1039/par
+    if 3621/par  <=firstloc<=4620/par and (8664/par<=guard.x<=23336/par):
+        guard.y=4620/par
+    if guard.y>5999/par:
+        guard.y=5999/par
+        
+def moveleft(guard):
+    firstloc=guard.x
+    guard.x=guard.x-1000/par
+    if guard.x<0/par:
+        guard.x=1/par
+    
+        
+def moveright(guard):
+    firstloc=guard.x
+    guard.x=guard.x+1000/par
+    if guard.y>31999/par:
+        guard.y=31999/par
+    
+    
+        
+def moveback(guard):
+    
+    firstloc=guard.y
+    
+    guard.y=guard.y-1000/par
+    if 1041/par<=firstloc<=2040/par and ((0/par<=guard.x<=4160/par)or(278400/par<=guard.x<=32000/par)):
+        guard.y=1041/par
+    elif 4622/par<=firstloc<=5621/par and (8664/par<=guard.x<=23336/par):
+        guard.y=4622/par
+    elif guard.y<0/par:
+        guard.y=0/par
+        
+        
+def moving():
+    global c
+    for i in moves:
+        (G1.x,G1.y)=guard1start
+        (G2.x,G2.y)=guard2start
+        (G3.x,G3.y)=guard3start
+        (G4.x,G4.y)=guard4start
+        
+        if i.digits12=='00':
+            moveforward(G1)
+        elif i.digits12=='01':
+            moveleft(G1)
+        elif i.digits12=='10':
+            moveright(G1)
+        elif i.digits12=='11':
+            moveback(G1)
+            
+        if i.digits34=='00':
+            moveforward(G2)
+        elif i.digits34=='01':
+            moveleft(G2)
+        elif i.digits34=='10':
+            moveright(G2)
+        elif i.digits34=='11':
+            moveback(G2)
+            
+        if i.digits56=='00':
+            moveforward(G3)
+        elif i.digits56=='01':
+            moveleft(G3)
+        elif i.digits56=='10':
+            moveright(G3)
+        elif i.digits56=='11':
+            moveback(G3)
+            
+        if i.digits78=='00':
+            moveforward(G4)
+        elif i.digits78=='01':
+            moveleft(G4)
+        elif i.digits78=='10':
+            moveright(G4)
+        elif i.digits78=='11':
+            moveback(G4)
+            
+        c=0
+        G1.randtheta()
+        G2.randtheta()
+        G3.randtheta()
+        G4.randtheta()
+            
+        for h in range(int(xmax)):
+            for j in range(int(ymax)):
+                
+                scr.set_at((int(h/xmax*xmaxscr),int(j/xmax*xmaxscr)),red)
+                
+                
+                vis1=visiblecheck(h,j,G1.x,G1.y,G1.theta11,G1.theta13,G1.theta21,G1.theta23,G1.theta31,G1.theta33,G1.r11,G1.r13,G1.r21,G1.r23,G1.r31,G1.r33)
+                vis2=visiblecheck(h,j,G2.x,G2.y,G2.theta11,G2.theta13,G2.theta21,G2.theta23,G2.theta31,G2.theta33,G2.r11,G2.r13,G2.r21,G2.r23,G2.r31,G2.r33)
+                vis3=visiblecheck(h,j,G3.x,G3.y,G3.theta11,G3.theta13,G3.theta21,G3.theta23,G3.theta31,G3.theta33,G3.r11,G3.r13,G3.r21,G3.r23,G3.r31,G3.r33)
+                vis4=visiblecheck(h,j,G4.x,G4.y,G4.theta11,G4.theta13,G4.theta21,G4.theta23,G4.theta31,G4.theta33,G4.r11,G4.r13,G4.r21,G4.r23,G4.r31,G4.r33)
+                 
+                if (vis1+vis2+vis3+vis4)>=1:
+                    scr.set_at((int(h/xmax*xmaxscr),int(j/xmax*xmaxscr)),green)
+                    c=c+1
+        
+        result=c
+        results.append(result)            
+        
+def comparemoves():  
+    for j in range(len(results)):
+        d=0
+        for k in range(len(results)):
+            if results[j]<=results[k]:
+                d=d+1
+        if d>=3:
+            moves.pop(moves.index(moves[j]))
+            moves.insert(j,0)
+            results.pop(results.index(results[j]))
+            results.insert(j,0)
+            
+    for i in range(3):
+        results.pop(results.index(0))
+        moves.pop(moves.index(0))
+        
+def comparemovestoone():
+    for j in range(len(results)):
+        d=0
+        for k in range(len(results)):
+            if results[j]<=results[k]:
+                d=d+1
+        if d>=2:
+            moves.pop(moves.index(moves[j]))
+            moves.insert(j,0)
+            results.pop(results.index(results[j]))
+            results.insert(j,0)
+            
+    for i in range(4):
+        results.pop(results.index(0))
+        moves.pop(moves.index(0))
+    
+        
+def addmoves():       
+    for i in range(3):
+        e=random.randint(1,6)
+        if e==1:
+            moves.append(move(moves[0].digits12,moves[0].digits34,moves[1].digits56,moves[1].digits78))
+        if e==2:
+            moves.append(move(moves[0].digits12,moves[1].digits34,moves[0].digits56,moves[1].digits78))
+        if e==3:
+            moves.append(move(moves[0].digits12,moves[1].digits34,moves[1].digits56,moves[0].digits78))
+        if e==4:
+            moves.append(move(moves[1].digits12,moves[0].digits34,moves[0].digits56,moves[1].digits78))
+        if e==5:
+            moves.append(move(moves[1].digits12,moves[0].digits34,moves[1].digits56,moves[0].digits78))
+        if e==6:
+            moves.append(move(moves[1].digits12,moves[1].digits34,moves[0].digits56,moves[0].digits78))
             
 #_____________________________________________________________________________________________
             
 # Make board
-par=10 
+par=100
 xmax=32000/par
 ymax=6000/par
 
@@ -96,7 +253,8 @@ class guard():
     def __init__(self,x,y):
         self.x=x
         self.y=y
-            
+        
+    def randtheta(self):        
         self.r11=sqrt((point11.x-self.x)**2+(point11.y-self.y)**2)
         if self.r11>0:
             if point11.x-self.x>0:
@@ -204,6 +362,13 @@ class guard():
         if self.theta33<0:
             self.theta33=self.theta33+2*pi
         
+class move():
+   def __init__(self,digits12,digits34,digits56,digits78):
+        self.digits12=digits12
+        self.digits34=digits34
+        self.digits56=digits56
+        self.digits78=digits78
+        
         
 #________________________________________________________________________
 #edge points
@@ -220,10 +385,15 @@ point31=importantpoint(8664/par,4621/par)
 point33=importantpoint(23336/par,4621/par)
 
 #guards
-G1=guard(10500/par,700/par)
-G2=guard(500/par,5700/par)
-G3=guard(16000/par,700/par)
-G4=guard(27000/par,2700/par)
+G1=guard(random.randint(0,31999)/par,random.randint(0,5999)/par)
+G2=guard(random.randint(0,31999)/par,random.randint(0,5999)/par)
+G3=guard(random.randint(0,31999)/par,random.randint(0,5999)/par)
+G4=guard(random.randint(0,31999)/par,random.randint(0,5999)/par)
+G1.randtheta()
+G2.randtheta()
+G3.randtheta()
+G4.randtheta()
+
 
 #______________________________________________________________________
 
@@ -253,9 +423,7 @@ for i in range(int(xmax)):
             scr.set_at((int(i/xmax*xmaxscr),int(j/xmax*xmaxscr)),green)
             c=c+1
         
-        
-       
-            
+                   
 #____________________________________________________________________________________
 pg.draw.line(scr,black,(int(point11.x/xmax*xmaxscr),int(point11.y/ymax*ymaxscr)),(int(point13.x/xmax*xmaxscr),int(point13.y/ymax*ymaxscr)))
 pg.draw.line(scr,black,(int(point21.x/xmax*xmaxscr),int(point21.y/ymax*ymaxscr)),(int(point23.x/xmax*xmaxscr),int(point23.y/ymax*ymaxscr)))
@@ -269,7 +437,7 @@ pg.display.flip()
 pg.event.pump()
 close = closescr()
 
-print("the area visible is", ((c/b))*100, "procent")
+print("the initial area visible is", ((c/b))*100, "procent")
 
 
 
@@ -289,3 +457,154 @@ print("the area visible is", ((c/b))*100, "procent")
 
     # Close screen when escape or cross is pressed
     #close = closescr()
+    
+#generating moves
+posi=['00','01','10','11']
+moveA=move(random.choice(posi),random.choice(posi),random.choice(posi),random.choice(posi))
+moveB=move(random.choice(posi),random.choice(posi),random.choice(posi),random.choice(posi))
+moveC=move(random.choice(posi),random.choice(posi),random.choice(posi),random.choice(posi))
+moveD=move(random.choice(posi),random.choice(posi),random.choice(posi),random.choice(posi))
+moveE=move(random.choice(posi),random.choice(posi),random.choice(posi),random.choice(posi))
+moves=[moveA, moveB, moveC, moveD, moveE]
+guards=[G1,G2,G3,G4]
+guard1start=(G1.x,G1.y)
+guard2start=(G2.x,G2.y)
+guard3start=(G3.x,G3.y)
+guard4start=(G4.x,G4.y)
+results=[]
+
+
+moving()
+comparemoves()
+addmoves()
+results=[]
+moving()
+comparemoves()
+addmoves()
+results=[]
+moving()
+comparemovestoone()
+moving()
+print("the second area visible is", ((c/b))*100, "procent")
+print("movements:")
+print(moves[0].digits12,moves[0].digits34,moves[0].digits56,moves[0].digits78)
+
+                
+
+guard1start=(G1.x,G1.y)
+guard2start=(G2.x,G2.y)
+guard3start=(G3.x,G3.y)
+guard4start=(G4.x,G4.y)
+moveA=move(random.choice(posi),random.choice(posi),random.choice(posi),random.choice(posi))
+moveB=move(random.choice(posi),random.choice(posi),random.choice(posi),random.choice(posi))
+moveC=move(random.choice(posi),random.choice(posi),random.choice(posi),random.choice(posi))
+moveD=move(random.choice(posi),random.choice(posi),random.choice(posi),random.choice(posi))
+moveE=move(random.choice(posi),random.choice(posi),random.choice(posi),random.choice(posi))
+moves=[moveA, moveB, moveC, moveD, moveE]
+results=[]
+
+
+moving()
+comparemoves()
+addmoves()
+results=[]
+moving()
+comparemoves()
+addmoves()
+results=[]
+moving()
+comparemovestoone()
+moving()
+print("the third area visible is", ((c/b))*100, "procent")
+print("movements:")
+print(moves[0].digits12,moves[0].digits34,moves[0].digits56,moves[0].digits78)
+
+
+
+guard1start=(G1.x,G1.y)
+guard2start=(G2.x,G2.y)
+guard3start=(G3.x,G3.y)
+guard4start=(G4.x,G4.y)
+moveA=move(random.choice(posi),random.choice(posi),random.choice(posi),random.choice(posi))
+moveB=move(random.choice(posi),random.choice(posi),random.choice(posi),random.choice(posi))
+moveC=move(random.choice(posi),random.choice(posi),random.choice(posi),random.choice(posi))
+moveD=move(random.choice(posi),random.choice(posi),random.choice(posi),random.choice(posi))
+moveE=move(random.choice(posi),random.choice(posi),random.choice(posi),random.choice(posi))
+moves=[moveA, moveB, moveC, moveD, moveE]
+results=[]
+
+
+moving()
+comparemoves()
+addmoves()
+results=[]
+moving()
+comparemoves()
+addmoves()
+results=[]
+moving()
+comparemovestoone()
+moving()
+print("the fourth area visible is", ((c/b))*100, "procent")
+print("movements:")
+print(moves[0].digits12,moves[0].digits34,moves[0].digits56,moves[0].digits78)
+
+
+
+guard1start=(G1.x,G1.y)
+guard2start=(G2.x,G2.y)
+guard3start=(G3.x,G3.y)
+guard4start=(G4.x,G4.y)
+moveA=move(random.choice(posi),random.choice(posi),random.choice(posi),random.choice(posi))
+moveB=move(random.choice(posi),random.choice(posi),random.choice(posi),random.choice(posi))
+moveC=move(random.choice(posi),random.choice(posi),random.choice(posi),random.choice(posi))
+moveD=move(random.choice(posi),random.choice(posi),random.choice(posi),random.choice(posi))
+moveE=move(random.choice(posi),random.choice(posi),random.choice(posi),random.choice(posi))
+moves=[moveA, moveB, moveC, moveD, moveE]
+results=[]
+
+
+moving()
+comparemoves()
+addmoves()
+results=[]
+moving()
+comparemoves()
+addmoves()
+results=[]
+moving()
+comparemovestoone()
+moving()
+print("the fifth area visible is", ((c/b))*100, "procent")
+print("movements:")
+print(moves[0].digits12,moves[0].digits34,moves[0].digits56,moves[0].digits78)
+
+
+
+guard1start=(G1.x,G1.y)
+guard2start=(G2.x,G2.y)
+guard3start=(G3.x,G3.y)
+guard4start=(G4.x,G4.y)
+moveA=move(random.choice(posi),random.choice(posi),random.choice(posi),random.choice(posi))
+moveB=move(random.choice(posi),random.choice(posi),random.choice(posi),random.choice(posi))
+moveC=move(random.choice(posi),random.choice(posi),random.choice(posi),random.choice(posi))
+moveD=move(random.choice(posi),random.choice(posi),random.choice(posi),random.choice(posi))
+moveE=move(random.choice(posi),random.choice(posi),random.choice(posi),random.choice(posi))
+moves=[moveA, moveB, moveC, moveD, moveE]
+results=[]
+
+
+moving()
+comparemoves()
+addmoves()
+results=[]
+moving()
+comparemoves()
+addmoves()
+results=[]
+moving()
+comparemovestoone()
+moving()
+print("the final area visible is", ((c/b))*100, "procent")
+print("movements:")
+print(moves[0].digits12,moves[0].digits34,moves[0].digits56,moves[0].digits78)
